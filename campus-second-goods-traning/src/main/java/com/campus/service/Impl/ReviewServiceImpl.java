@@ -7,7 +7,7 @@ import com.campus.entity.Trade;
 import com.campus.mapper.ReviewMapper;
 import com.campus.mapper.TradeMapper;
 import com.campus.service.ReviewService;
-import com.campus.util.CurrentHolder;
+import com.campus.utils.CurrentHolder;
 import com.campus.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +25,10 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
     @Override
     public Result<Boolean> saveReview(Review review) {
         // 1.获取当前登陆的用户ID
-        Integer currentUserIdInt = CurrentHolder.getCurrentId();
-        if (currentUserIdInt == null) {
+        Long currentUserId = CurrentHolder.getCurrentId();
+        if (currentUserId == null) {
             return Result.fail("用户未登录");
         }
-        // 将Integer转换为Long
-        Long currentUserId = currentUserIdInt.longValue();
         review.setReviewerId(currentUserId);
 
         // 2.验证交易是否存在且状态为COMPLETED

@@ -1,10 +1,10 @@
 package com.campus.controller;
 
 import com.campus.entity.Goods;
-import com.campus.entity.Users;
-import com.campus.mapper.LoginMapper;
+import com.campus.entity.User;
+import com.campus.mapper.UserMapper;
 import com.campus.service.GoodsService;
-import com.campus.util.CurrentHolder;
+import com.campus.utils.CurrentHolder;
 import com.campus.utils.Result;
 import com.campus.vo.GoodsDetailVo;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class GoodsController {
     private GoodsService goodsService;
     
     @Autowired
-    private LoginMapper loginMapper;
+    private UserMapper userMapper;
     
     /**
      * 创建商品
@@ -32,14 +32,14 @@ public class GoodsController {
     public Result<Boolean> createGoods(@Valid @RequestBody Goods goods) {
         try {
             // 从ThreadLocal获取当前用户ID
-            Integer currentUserId = CurrentHolder.getCurrentId();
+            Long currentUserId = CurrentHolder.getCurrentId();
             if (currentUserId == null) {
                 log.warn("未获取到当前用户ID");
                 return Result.fail("用户未登录");
             }
             
             // 设置卖家ID为当前用户
-            goods.setSellerId(Long.valueOf(currentUserId));
+            goods.setSellerId(currentUserId);
             log.info("创建商品请求: {}, 卖家ID: {}", goods.getName(), currentUserId);
             
             boolean success = goodsService.createGoods(goods);
@@ -63,7 +63,7 @@ public class GoodsController {
     public Result<Boolean> updateGoods(@Valid @RequestBody Goods goods) {
         try {
             // 从ThreadLocal获取当前用户ID
-            Integer currentUserId = CurrentHolder.getCurrentId();
+            Long currentUserId = CurrentHolder.getCurrentId();
             if (currentUserId == null) {
                 log.warn("未获取到当前用户ID");
                 return Result.fail("用户未登录");
@@ -76,7 +76,7 @@ public class GoodsController {
             }
             
             // 权限校验：只有卖家本人可以修改
-            if (!existingGoods.getSellerId().equals(Long.valueOf(currentUserId))) {
+            if (!existingGoods.getSellerId().equals(currentUserId)) {
                 log.warn("用户{}尝试修改不属于自己的商品{}", currentUserId, goods.getId());
                 return Result.fail("您无权修改此商品");
             }
@@ -110,7 +110,7 @@ public class GoodsController {
             detailVo.setGoods(goods);
             
             // 获取卖家信息
-            Users seller = loginMapper.findById(goods.getSellerId().intValue());
+            User seller = userMapper.selectById(goods.getSellerId());
             if (seller != null) {
                 GoodsDetailVo.SellerInfo sellerInfo = new GoodsDetailVo.SellerInfo();
                 sellerInfo.setSellerId(goods.getSellerId());
@@ -173,7 +173,7 @@ public class GoodsController {
     public Result<Boolean> deleteGoods(@PathVariable Long id) {
         try {
             // 从ThreadLocal获取当前用户ID
-            Integer currentUserId = CurrentHolder.getCurrentId();
+            Long currentUserId = CurrentHolder.getCurrentId();
             if (currentUserId == null) {
                 log.warn("未获取到当前用户ID");
                 return Result.fail("用户未登录");
@@ -186,7 +186,7 @@ public class GoodsController {
             }
             
             // 权限校验：只有卖家本人可以删除
-            if (!existingGoods.getSellerId().equals(Long.valueOf(currentUserId))) {
+            if (!existingGoods.getSellerId().equals(currentUserId)) {
                 log.warn("用户{}尝试删除不属于自己的商品{}", currentUserId, id);
                 return Result.fail("您无权删除此商品");
             }

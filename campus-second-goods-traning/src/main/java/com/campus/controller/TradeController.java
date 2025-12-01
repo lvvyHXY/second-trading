@@ -4,14 +4,12 @@ import com.campus.dto.UpdateTradeStatusDTO;
 import com.campus.entity.Trade;
 import com.campus.entity.TradeCreateDTO;
 import com.campus.entity.TradePageQueryDTO;
-import com.campus.util.CurrentHolder;
+import com.campus.utils.CurrentHolder;
 import com.campus.utils.PageResult;
 import com.campus.utils.Result;
 import com.campus.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/trades")
@@ -39,13 +37,13 @@ public class TradeController {
     @GetMapping
     public Result<PageResult> pageQuery(TradePageQueryDTO tradePageQueryDTO){
         System.out.println(tradePageQueryDTO);
-        Integer currentUserId = CurrentHolder.getCurrentId();
+        Long currentUserId = CurrentHolder.getCurrentId();
         // 添加空值检查
         if (currentUserId == null) {
             throw new IllegalStateException("无法获取当前用户ID");
         }
 
-        PageResult pageResult =tradeService.pageQuery(tradePageQueryDTO,currentUserId);
+        PageResult pageResult =tradeService.pageQuery(tradePageQueryDTO, currentUserId);
         return Result.success(pageResult);
     }
 

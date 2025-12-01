@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("users")
-public class Users {
+public class User {
     /*
     * user_id INT AUTO_INCREMENT PRIMARY KEY COMMENT '用户ID，主键',
     username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名，唯一',
@@ -30,7 +30,7 @@ public class Users {
     *
     */
     @TableId(type = IdType.AUTO)
-    private Integer userId;
+    private Long userId;
     private String username;
     private String password;
     private String email;
@@ -51,5 +51,9 @@ public class Users {
 
     public String getAvatar() {
         return avatarUrl;
+    }
+
+    public Long getId() {
+        return userId;
     }
 }

@@ -2,7 +2,7 @@ package com.campus.controller;
 
 import com.campus.entity.Review;
 import com.campus.service.ReviewService;
-import com.campus.util.CurrentHolder;
+import com.campus.utils.CurrentHolder;
 import com.campus.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +54,10 @@ public class ReviewController {
      */
     @GetMapping("/my")
     public Result<List<Review>> getMyReviews() {
-        Integer currentUserIdInt = CurrentHolder.getCurrentId();
-        if (currentUserIdInt == null) {
+        Long currentUserId = CurrentHolder.getCurrentId();
+        if (currentUserId == null) {
             return Result.fail("用户未登录");
         }
-        // 将Integer转换为Long
-        Long currentUserId = currentUserIdInt.longValue();
         return reviewService.getReviewsByReviewerId(currentUserId);
     }
 }
